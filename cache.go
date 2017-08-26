@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
@@ -39,7 +39,7 @@ func CreateCache(path string) (*Cache, error) {
 	cache := Cache{path: path, Version: &version}
 	_, err := os.Stat(path)
 	if err != nil {
-		log.Println("Cache file doesn't exist. Creating a new file")
+		fmt.Println("Cache file doesn't exist. Creating a new file")
 		err = cache.Save()
 		if err != nil {
 			return nil, err
