@@ -6,11 +6,19 @@ import (
 	"os"
 )
 
+var version string
+
 func main() {
 	var oldVersion string
 
 	infoFlag := flag.Bool("info", false, "Print old and new version")
+	versionFlag := flag.Bool("version", false, "Print version information")
 	flag.Parse()
+
+	if *versionFlag {
+		fmt.Println(version)
+		os.Exit(0)
+	}
 
 	path, _ := os.Getwd()
 	repo, err := CreateRepository(path)
