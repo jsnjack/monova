@@ -37,6 +37,7 @@ func main() {
 
 	if *infoFlag {
 		fmt.Printf("%s -> %s\n", oldVersion, newVersion)
+		fmt.Printf("Commits inspected: %d\n", repo.commitCursor)
 	} else {
 		fmt.Println(newVersion)
 	}
