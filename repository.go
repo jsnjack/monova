@@ -19,6 +19,7 @@ type Repository struct {
 	Path         string
 	commitCursor int
 	Cache        *Cache
+	Config       *Config
 }
 
 // GetNextCommit returns a Commit object to which points commitCursor
@@ -60,7 +61,7 @@ commitLoop:
 		}
 	}
 	for _, value := range ReverseCommits(commits) {
-		r.Cache.Version.Update(value.Subject)
+		r.Cache.Version.Update(value.Subject, r.Config)
 	}
 	if len(commits) > 0 {
 		r.Cache.CommitID = commits[len(commits)-1].ID
@@ -92,7 +93,11 @@ func CreateRepository(repoPath string) (*Repository, error) {
 	if err != nil {
 		return nil, err
 	}
-	repo := Repository{Path: repoPath, Cache: cache}
+	repo := Repository{
+		Path:   repoPath,
+		Cache:  cache,
+		Config: CreateConfig(),
+	}
 	return &repo, nil
 }
 
