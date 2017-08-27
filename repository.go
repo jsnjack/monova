@@ -8,7 +8,7 @@ import (
 	"path"
 )
 
-const cacheFilename = ".dahary.cache"
+const cacheFilename = ".monova.cache"
 
 var (
 	errNoCommits = errors.New("No commits in repository")

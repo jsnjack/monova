@@ -1,12 +1,12 @@
-BINARY:=dahary
-DAHARY:=$(shell dahary -v dot 2> /dev/null)
+BINARY:=monova
+MONOVA:=$(shell dahary -v dot 2> /dev/null)
 VERSION:=0.0.0
 
 version:
-ifdef DAHARY
-	VERSION:=$(shell dahary)
+ifdef MONOVA
+	VERSION:=$(shell monova)
 else
-	$(info !Install dahary to automatically update version)
+	$(info !Install monova to automatically update version)
 endif
 
 build: version
