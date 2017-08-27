@@ -19,7 +19,6 @@ type Repository struct {
 	Path         string
 	commitCursor int
 	Cache        *Cache
-	lastCommit   *Commit
 }
 
 // GetNextCommit returns a Commit object to which points commitCursor
@@ -37,15 +36,13 @@ func (r *Repository) GetNextCommit() (*Commit, error) {
 	if err != nil {
 		return nil, err
 	}
-	if r.commitCursor == 0 {
-		r.lastCommit = commit
-	}
 	r.commitCursor = r.commitCursor + 1
 	return commit, nil
 }
 
 // UpdateVersion updates and returns package version
 func (r *Repository) UpdateVersion() (string, error) {
+	var commits []*Commit
 commitLoop:
 	for {
 		commit, err := r.GetNextCommit()
@@ -57,12 +54,17 @@ commitLoop:
 			return "", err
 		}
 		if commit.ID != r.Cache.CommitID {
-			r.Cache.Version.Update(commit.Subject)
+			commits = append(commits, commit)
 		} else {
 			break
 		}
 	}
-	r.Cache.CommitID = r.lastCommit.ID
+	for _, value := range ReverseCommits(commits) {
+		r.Cache.Version.Update(value.Subject)
+	}
+	if len(commits) > 0 {
+		r.Cache.CommitID = commits[len(commits)-1].ID
+	}
 	r.Cache.Save()
 	return r.GetVersion(), nil
 }
@@ -102,4 +104,12 @@ func isGitRepository(path string) bool {
 		return false
 	}
 	return true
+}
+
+// ReverseCommits reverses order of the commits
+func ReverseCommits(commits []*Commit) []*Commit {
+	for i, j := 0, len(commits)-1; i < j; i, j = i+1, j-1 {
+		commits[i], commits[j] = commits[j], commits[i]
+	}
+	return commits
 }
