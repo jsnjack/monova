@@ -123,6 +123,9 @@ commitLoop:
 		if err != nil {
 			fmt.Println(err)
 		}
+		if *debugFlag {
+			fmt.Printf("%s --> %s\n", value.Subject, r.GetVersion())
+		}
 	}
 	if len(commits) > 0 {
 		r.Cache.CommitID = commits[len(commits)-1].ID

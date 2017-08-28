@@ -8,6 +8,7 @@ import (
 )
 
 var version string
+var debugFlag *bool
 
 func main() {
 	var oldVersion string
@@ -16,6 +17,7 @@ func main() {
 	versionFlag := flag.Bool("version", false, "Print version information")
 	checkpointFlag := flag.Bool("checkpoint", false, "Create checkpoint")
 	resetFlag := flag.Bool("reset", false, "Recalculate version")
+	debugFlag = flag.Bool("debug", false, "Enable extra logging")
 	flag.Parse()
 
 	if *versionFlag {
