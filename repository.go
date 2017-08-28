@@ -123,7 +123,10 @@ commitLoop:
 		if err != nil {
 			fmt.Println(err)
 		}
-		SaveHistory(value, r.GetVersion())
+		err = SaveHistory(value, r.GetVersion())
+		if err != nil {
+			fmt.Println(err)
+		}
 		if *debugFlag {
 			fmt.Printf("%s --> %s\n", value.Subject, r.GetVersion())
 		}
