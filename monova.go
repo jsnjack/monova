@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path"
 )
 
 var version string
@@ -14,6 +15,7 @@ func main() {
 	infoFlag := flag.Bool("info", false, "Print old and new version")
 	versionFlag := flag.Bool("version", false, "Print version information")
 	checkpointFlag := flag.Bool("checkpoint", false, "Create checkpoint")
+	resetFlag := flag.Bool("reset", false, "Recalculate version")
 	flag.Parse()
 
 	if *versionFlag {
@@ -21,8 +23,19 @@ func main() {
 		return
 	}
 
-	path, _ := os.Getwd()
-	repo, err := CreateRepository(path)
+	cwd, _ := os.Getwd()
+
+	// Remove .monova.cache file to recalculate the version
+	if *resetFlag {
+		cachePath := path.Join(cwd, cacheFilename)
+		err := os.Remove(cachePath)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+
+	repo, err := CreateRepository(cwd)
 	if err != nil {
 		fmt.Println(err)
 		return
