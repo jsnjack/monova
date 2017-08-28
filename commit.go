@@ -11,7 +11,7 @@ func CreateCommit(logStr string) (*Commit, error) {
 	// Quotes is the first character
 	commit := Commit{
 		ID:      logStr[1:41],
-		Subject: logStr[41:],
+		Subject: logStr[41 : len(logStr)-2],
 	}
 	return &commit, nil
 }

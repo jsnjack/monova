@@ -18,7 +18,7 @@ func main() {
 
 	if *versionFlag {
 		fmt.Println(version)
-		os.Exit(0)
+		return
 	}
 
 	path, _ := os.Getwd()
