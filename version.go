@@ -45,8 +45,8 @@ func (v *Version) Update(subject string, config *Config) error {
 	for _, key := range config.PatchKeys {
 		if strings.Contains(subject, key) {
 			v.Patch = v.Patch + 1
+			return nil
 		}
-		return nil
 	}
 	return nil
 }
