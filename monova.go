@@ -36,6 +36,12 @@ func main() {
 			fmt.Println(err)
 			return
 		}
+		historyPath := path.Join(cwd, historyFilename)
+		err = os.Remove(historyPath)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
 
 	// Create repository instance
