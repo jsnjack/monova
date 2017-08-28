@@ -20,6 +20,7 @@ func main() {
 	debugFlag = flag.Bool("debug", false, "Enable extra logging")
 	flag.Parse()
 
+	// Print application version and exit
 	if *versionFlag {
 		fmt.Println(version)
 		return
@@ -37,16 +38,19 @@ func main() {
 		}
 	}
 
+	// Create repository instance
 	repo, err := CreateRepository(cwd)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
+	// Save old version
 	if *infoFlag {
 		oldVersion = repo.GetVersion()
 	}
 
+	// Calculate new version
 	newVersion, err := repo.UpdateVersion()
 	if err != nil {
 		fmt.Println(err)
