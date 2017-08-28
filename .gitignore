@@ -1,4 +1,5 @@
 .monova.cache
 .monova.config
+.monova.history
 debug
 monova

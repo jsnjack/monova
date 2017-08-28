@@ -123,6 +123,8 @@ commitLoop:
 		if err != nil {
 			fmt.Println(err)
 		}
+		historyLine := fmt.Sprintf("%s %s %s", value.ID, value.Subject, r.GetVersion())
+		SaveHistory(historyLine)
 		if *debugFlag {
 			fmt.Printf("%s --> %s\n", value.Subject, r.GetVersion())
 		}
