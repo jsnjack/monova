@@ -14,7 +14,7 @@ type Version struct {
 // Update version based on the commit subject
 func (v *Version) Update(subject string, config *Config) error {
 	if strings.HasPrefix(subject, checkpointPrefix) && strings.HasSuffix(subject, checkpointSuffix) {
-		checkpoint := subject[len(checkpointPrefix):len(checkpointSuffix)]
+		checkpoint := subject[len(checkpointPrefix) : len(subject)-len(checkpointSuffix)]
 		splits, err := SplitVersion(checkpoint)
 		if err != nil {
 			return err
