@@ -1,9 +1,13 @@
 package main
 
-import "os"
-import "path"
-import "fmt"
-import "strings"
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"os"
+	"path"
+	"strings"
+)
 
 const historyFilename = ".monova.history"
 
@@ -34,4 +38,32 @@ func generateHistoryLine(commitID, subject, version string) string {
 	}
 	line := fmt.Sprintf("%s %s %s", commitID, trimmed, version)
 	return line
+}
+
+// PrintHistory prints version history. Use it to find commits related to the
+// specific version or vice versa
+func PrintHistory() error {
+	cwd, _ := os.Getwd()
+	historyPath := path.Join(cwd, historyFilename)
+	file, err := os.OpenFile(historyPath, os.O_RDONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	reader := bufio.NewReader(file)
+
+	var line string
+	for {
+		line, err = reader.ReadString('\n')
+		fmt.Print(line)
+		if err != nil {
+			break
+		}
+	}
+
+	if err != io.EOF {
+		return err
+	}
+	return nil
 }

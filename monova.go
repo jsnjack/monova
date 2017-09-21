@@ -18,6 +18,7 @@ func main() {
 	checkpointFlag := flag.Bool("checkpoint", false, "Create checkpoint [version]")
 	resetFlag := flag.Bool("reset", false, "Recalculate version")
 	debugFlag = flag.Bool("debug", false, "Enable extra logging")
+	historyFlag := flag.Bool("history", false, "Print version history")
 	flag.Parse()
 
 	// Print application version and exit
@@ -77,5 +78,13 @@ func main() {
 		fmt.Printf("Commits inspected: %d\n", repo.commitCursor)
 	} else {
 		fmt.Println(newVersion)
+	}
+
+	if *historyFlag {
+		err = PrintHistory()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
 }
