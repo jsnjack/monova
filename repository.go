@@ -102,8 +102,11 @@ func (r *Repository) cleanCheckpoint(checkpoint string) (string, error) {
 // UpdateVersion updates and returns package version
 func (r *Repository) UpdateVersion() (string, error) {
 	var commits []*Commit
+	var pbar ProgressBar
 commitLoop:
 	for {
+		pbar.ClearLine()
+		fmt.Print(pbar.Next())
 		commit, err := r.GetNextCommit()
 		switch err {
 		case errNoCommits:
@@ -118,6 +121,7 @@ commitLoop:
 			break
 		}
 	}
+	pbar.ClearLine()
 	for _, value := range ReverseCommits(commits) {
 		err := r.Cache.Version.Update(value.Subject, r.Config)
 		if err != nil {
