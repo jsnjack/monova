@@ -69,3 +69,14 @@ $ git log
 ```
 
 ### How to install
+
+#### Debian
+```bash
+curl -s https://packagecloud.io/install/repositories/jsnjack/monova/script.deb.sh | sudo bash
+```
+
+#### Fedora
+```bash
+curl -s https://packagecloud.io/install/repositories/jsnjack/monova/script.rpm.sh | sudo bash
+```
+
