@@ -1,0 +1,17 @@
+dependencies:
+  pre:
+    - sudo apt-get install rpm
+    - gem install package_cloud
+    - gem install fpm
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - make build
+      - make dist
+      - cp -R dist/* $CIRCLE_ARTIFACTS
+      - package_cloud push jsnjack/monova/debian/jessie $(find dist -name "*.deb") --skip-errors
+      - package_cloud push jsnjack/monova/debian/stretch $(find dist -name "*.deb") --skip-errors
+      - package_cloud push jsnjack/monova/fedora/25 $(find dist -name "*.rpm") --skip-errors
+      - package_cloud push jsnjack/monova/fedora/26 $(find dist -name "*.rpm") --skip-errors
