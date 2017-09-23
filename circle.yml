@@ -3,6 +3,7 @@ dependencies:
     - sudo apt-get install rpm
     - gem install package_cloud
     - gem install fpm
+    - gem install deb-s3
 
 deployment:
   production:
