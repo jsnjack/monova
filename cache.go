@@ -39,7 +39,9 @@ func CreateCache(path string) (*Cache, error) {
 	cache := Cache{path: path, Version: &version}
 	_, err := os.Stat(path)
 	if err != nil {
-		fmt.Println("Cache file doesn't exist. Creating a new file")
+		if *infoFlag {
+			fmt.Println("Cache file doesn't exist. Creating a new file")
+		}
 		err = cache.Save()
 		if err != nil {
 			return nil, err
