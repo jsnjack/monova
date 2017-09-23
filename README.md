@@ -1,6 +1,8 @@
 monova
 =====
 
+[![CircleCI](https://circleci.com/gh/jsnjack/monova.svg?style=svg)](https://circleci.com/gh/jsnjack/monova)
+
 ### What is it?
 monova automatically calculates version of the application based on the commit messages
 
