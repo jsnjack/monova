@@ -9,6 +9,7 @@ deployment:
   production:
     branch: master
     commands:
+      - git fetch --unshallow
       - make build
       - make dist
       - cp -R dist/* $CIRCLE_ARTIFACTS
