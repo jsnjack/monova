@@ -105,8 +105,10 @@ func (r *Repository) UpdateVersion() (string, error) {
 	var pbar ProgressBar
 commitLoop:
 	for {
-		pbar.ClearLine()
-		fmt.Print(pbar.Next())
+		if *infoFlag {
+			pbar.ClearLine()
+			fmt.Print(pbar.Next())
+		}
 		commit, err := r.GetNextCommit()
 		switch err {
 		case errNoCommits:
@@ -121,7 +123,9 @@ commitLoop:
 			break
 		}
 	}
-	pbar.ClearLine()
+	if *infoFlag {
+		pbar.ClearLine()
+	}
 	for _, value := range ReverseCommits(commits) {
 		err := r.Cache.Version.Update(value.Subject, r.Config)
 		if err != nil {

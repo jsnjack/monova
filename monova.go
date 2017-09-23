@@ -9,11 +9,12 @@ import (
 
 var version string
 var debugFlag *bool
+var infoFlag *bool
 
 func main() {
 	var oldVersion string
 
-	infoFlag := flag.Bool("info", false, "Print old and new version")
+	infoFlag = flag.Bool("info", false, "Print old and new version")
 	versionFlag := flag.Bool("version", false, "Print version information")
 	checkpointFlag := flag.Bool("checkpoint", false, "Create checkpoint [version]")
 	resetFlag := flag.Bool("reset", false, "Recalculate version")
