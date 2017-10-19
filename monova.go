@@ -24,7 +24,11 @@ func main() {
 
 	// Print application version and exit
 	if *versionFlag {
-		fmt.Println(version)
+		if version == "" {
+			fmt.Println("latest")
+		} else {
+			fmt.Println(version)
+		}
 		return
 	}
 
