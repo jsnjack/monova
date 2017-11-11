@@ -67,3 +67,16 @@ func PrintHistory() error {
 	}
 	return nil
 }
+
+// GetCommitID returns commitID from the history lines
+func GetCommitID(historyLine *string) (string, error) {
+	// commitid is normally 40, version is at least 6, 2 spaces around commit name
+	if len(*historyLine) <= 49 {
+		return "", fmt.Errorf("Invalid history line")
+	}
+	id := (*historyLine)[:40]
+	if strings.Contains(id, " ") {
+		return "", fmt.Errorf("Invalid history line")
+	}
+	return id, nil
+}

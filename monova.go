@@ -34,16 +34,10 @@ func main() {
 
 	cwd, _ := os.Getwd()
 
-	// Remove .monova.cache file to recalculate the version
+	// Remove .monova.history file to recalculate the version
 	if *resetFlag {
-		cachePath := path.Join(cwd, cacheFilename)
-		err := os.Remove(cachePath)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
 		historyPath := path.Join(cwd, historyFilename)
-		err = os.Remove(historyPath)
+		err := os.Remove(historyPath)
 		if err != nil {
 			fmt.Println(err)
 			return

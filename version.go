@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -49,4 +51,30 @@ func (v *Version) Update(subject string, config *Config) error {
 		}
 	}
 	return nil
+}
+
+// SplitVersion returns array of version [major, minor, patch]
+func SplitVersion(checkpoint string) ([]int, error) {
+	var numbers []int
+	splits := strings.Split(checkpoint, ".")
+	if len(splits) != 3 {
+		return numbers, fmt.Errorf("Not valid checkpoint: %s", checkpoint)
+	}
+	for _, value := range splits {
+		number, err := strconv.Atoi(value)
+		if err != nil {
+			return numbers, fmt.Errorf("Not valid checkpoint: %s", checkpoint)
+		}
+		numbers = append(numbers, number)
+	}
+	return numbers, nil
+}
+
+// ExtractVersionFromString extracts version string, which is typically in the end
+func ExtractVersionFromString(str *string) (string, error) {
+	splitted := strings.SplitAfter(*str, " ")
+	if len(splitted) > 0 {
+		return splitted[len(splitted)-1], nil
+	}
+	return "", fmt.Errorf("Empty")
 }
