@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+// BufferSize is the size of the buffer to read thelast line of the
+// history file
+var BufferSize = 512
+
 // Reader interface
 type Reader interface {
 	ReadString(delim byte) (string, error)
@@ -20,7 +24,7 @@ var ReadLastLine = func(path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	breader := bufio.NewReader(file)
+	breader := createBuffer(file)
 	return readLastLine(breader)
 }
 
@@ -41,6 +45,9 @@ func readLastLine(breader Reader) (string, error) {
 }
 
 func getLastMeaningfulLine(lines *[]string) (string, error) {
+	if *debugFlag {
+		fmt.Printf("Analysing %d lines from history file\n", len(*lines))
+	}
 	for i := len(*lines) - 1; i >= 0; i-- {
 		cleaned := strings.TrimSpace((*lines)[i])
 		if len(cleaned) > 0 {
@@ -48,4 +55,18 @@ func getLastMeaningfulLine(lines *[]string) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("Empty file")
+}
+
+func createBuffer(file *os.File) Reader {
+	breader := bufio.NewReaderSize(file, BufferSize)
+	stat, _ := file.Stat()
+	size := stat.Size()
+	toDiscard := size - int64(BufferSize)
+	if toDiscard > 0 {
+		breader.Discard(int(toDiscard))
+		if *debugFlag {
+			fmt.Printf("Discarded %d bytes from history file\n", int(toDiscard))
+		}
+	}
+	return breader
 }
