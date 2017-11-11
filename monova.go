@@ -10,17 +10,23 @@ import (
 var version string
 var debugFlag *bool
 var infoFlag *bool
+var versionFlag *bool
+var checkpointFlag *bool
+var resetFlag *bool
+var historyFlag *bool
+
+func init() {
+	infoFlag = flag.Bool("info", false, "Print old and new version")
+	versionFlag = flag.Bool("version", false, "Print version information")
+	checkpointFlag = flag.Bool("checkpoint", false, "Create checkpoint [version]")
+	resetFlag = flag.Bool("reset", false, "Recalculate version")
+	debugFlag = flag.Bool("debug", false, "Enable extra logging")
+	historyFlag = flag.Bool("history", false, "Print version history")
+	flag.Parse()
+}
 
 func main() {
 	var oldVersion string
-
-	infoFlag = flag.Bool("info", false, "Print old and new version")
-	versionFlag := flag.Bool("version", false, "Print version information")
-	checkpointFlag := flag.Bool("checkpoint", false, "Create checkpoint [version]")
-	resetFlag := flag.Bool("reset", false, "Recalculate version")
-	debugFlag = flag.Bool("debug", false, "Enable extra logging")
-	historyFlag := flag.Bool("history", false, "Print version history")
-	flag.Parse()
 
 	// Print application version and exit
 	if *versionFlag {
