@@ -8,12 +8,13 @@ type Cache struct {
 
 // CreateCache creates Cache instance
 func CreateCache(path string) (*Cache, error) {
-	version, commitID := getDataFromHistory(path)
+	version, commitID := GetDataFromHistory(path)
 	cache := Cache{Version: version, CommitID: commitID}
 	return &cache, nil
 }
 
-func getDataFromHistory(path string) (*Version, string) {
+// GetDataFromHistory returns Version object and commitid from the history line
+func GetDataFromHistory(path string) (*Version, string) {
 	var version Version
 	versionLine, err := ReadLastLine(path)
 	if err != nil {
