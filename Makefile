@@ -19,12 +19,5 @@ build: version
 run: build
 	./${BINARY}
 
-dist: build
-	@for type in ${BUILD_TYPES} ; do \
-		cd ${PWD}/dist && fpm --input-type dir --output-type $$type \
-		--name monova --version ${VERSION} --license MIT --no-depends --provides monova \
-		--vendor jsnjack@gmail.com \
-		--maintainer jsnjack@gmail.com --description \
-		"Automatically calculates version of the application based on the commit messages" \
-		--url https://github.com/jsnjack/monova --force --chdir ${PWD} ./monova=/usr/bin/monova; \
-	done
+release: build
+	release_on_github -f ${BINARY} -r jsnjack/monova -t "v`monova`"
