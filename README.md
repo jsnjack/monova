@@ -1,13 +1,11 @@
 monova
 =====
 
-[![CircleCI](https://circleci.com/gh/jsnjack/monova.svg?style=svg)](https://circleci.com/gh/jsnjack/monova)
-
 ### What is it?
 monova automatically calculates version of the application based on the commit messages
 
 ### How to use?
-monova uses format `Major.Minor.Patch` (f.e. `1.11.3`) to calculate the version. To automatically increase the version of the application add one of the reserved words (by default `:major:`, `:minor:` or `:patch:`) to the commit message
+monova uses format `Major.Minor.Patch` (f.e. `1.11.3`) to calculate the version. To automatically increase the version of the application, add one of the reserved words (by default `:M:`.`:m:`.`:p:`) to the commit message
 
 Check [Makefile](https://github.com/jsnjack/monova/blob/master/Makefile) to see how it could be integrated into the build process
 
