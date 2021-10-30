@@ -20,4 +20,4 @@ run: build
 	./${BINARY}
 
 release: build
-	grm release jsnjack/wakeci -f ${BINARY} -t "v`monova`"
+	grm release jsnjack/monova -f ${BINARY} -t "v`monova`"
