@@ -52,7 +52,6 @@ func CreateConfig() *Config {
 	_, err := os.Stat(config.path)
 	if err != nil {
 		// Config does not exist
-		config.Save()
 		return &config
 	}
 	err = config.Load()
