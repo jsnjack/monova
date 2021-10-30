@@ -9,9 +9,9 @@ import (
 
 const (
 	configFile      = ".monova.config"
-	defaultMajorKey = ":major:"
-	defaultMinorKey = ":minor:"
-	defaultPatchKey = ":patch:"
+	defaultMajorKey = ":M:"
+	defaultMinorKey = ":m:"
+	defaultPatchKey = ":p:"
 )
 
 // Config represents application configuration
