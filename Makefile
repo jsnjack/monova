@@ -1,34 +1,28 @@
 BINARY:=monova
-# Check if monova installed
-MONOVA:=$(shell monova -version dot 2> /dev/null)
-BUILD_TYPES:=rpm deb
 PWD:=$(shell pwd)
 VERSION=0.0.0
+MONOVA:=$(shell which monova 2> /dev/null)
 
 version:
 ifdef MONOVA
-override VERSION="$(shell monova)"
+override VERSION=$(shell monova)
 else
-# Use local monova
-override VERSION="$(shell test -f monova && ./monova || echo 0.0.0)"
+	$(info "Install monova (https://github.com/jsnjack/monova) to calculate version")
 endif
 
-build: ${BINARY} dist/monova_linux_amd64 dist/monova_darwin_amd64
+start:
+	find . -name "*.go" | entr -sr "go build && ./${BINARY}"
 
-${BINARY}: version
-	go build -ldflags="-X main.version=${VERSION}"
+bin/${BINARY}: bin/${BINARY}_linux_amd64
+	cp bin/${BINARY}_linux_amd64 bin/${BINARY}
 
+bin/${BINARY}_linux_amd64: version *.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-X github.com/jsnjack/${BINARY}/cmd.Version=${VERSION}" -o bin/${BINARY}_linux_amd64
 
-dist/monova_linux_amd64: version *.go
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-X main.version=${VERSION}" -o dist/monova_linux_amd64
-
-dist/monova_darwin_amd64: version *.go
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags="-X main.version=${VERSION}" -o dist/monova_darwin_amd64
-
-run: build
-	./${BINARY}
+build: bin/${BINARY} bin/${BINARY}_linux_amd64
 
 release: build
-	tar --transform='s,_.*,,' --transform='s,dist/,,' -cz -f dist/${BINARY}_linux_amd64.tar.gz dist/${BINARY}_linux_amd64
-	tar --transform='s,_.*,,' --transform='s,dist/,,' -cz -f dist/${BINARY}_darwin_amd64.tar.gz dist/${BINARY}_darwin_amd64
-	grm release jsnjack/${BINARY} -f dist/${BINARY}_linux_amd64.tar.gz -f dist/${BINARY}_darwin_amd64.tar.gz -t "v`monova`"
+	tar --transform='s,_.*,,' --transform='s,bin/,,' -cz -f bin/${BINARY}_linux_amd64.tar.gz bin/${BINARY}_linux_amd64
+	grm release jsnjack/${BINARY} -f bin/${BINARY}_linux_amd64.tar.gz -t "v`monova`"
+
+.PHONY: version release build
