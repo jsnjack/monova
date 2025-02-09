@@ -58,6 +58,11 @@ func (h *History) GetVersion(printHistory bool) (*PackageVersion, error) {
 		}
 
 		commits = append(commits, commit)
+		if commit.IsCheckpointCommit() && !printHistory {
+			// If we find a checkpoint commit, we stop reading commits
+			DebugLogger.Printf("Checkpoint commit found: %s. Exiting reading loop\n", commit.CommitID)
+			break
+		}
 		i = i + commitReadBatchSize
 	}
 
