@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"text/tabwriter"
 	"time"
 )
@@ -13,7 +14,7 @@ import (
 // between the commit hash and the version number.
 const HistoryFilename = ".monova.history"
 
-const commitReadBatchSize = 1
+const commitReadBatchSize = 10
 
 var ErrNoCommitsLeft = fmt.Errorf("no commits left")
 
@@ -34,15 +35,16 @@ func (h *History) GetVersion(printHistory bool) (*PackageVersion, error) {
 	}
 
 	i := 0
-	commits := make([]*Commit, 0)
+	commitsHistory := make([]*Commit, 0)
 
 	// To track rebases, we need to check if the current commit is found in the git log.
 	// If it is found, we reset currentVersion as everything will be calculated from scratch.
 	currentCommitFound := false
 
 	// Read all new commits from git
+OuterLoop:
 	for {
-		commit, err := h.readCommitFromGit(i)
+		commits, err := h.readCommitsFromGit(i)
 		if err != nil {
 			if err == ErrNoCommitsLeft {
 				DebugLogger.Printf("No more commits found. Exiting reading loop\n")
@@ -51,35 +53,37 @@ func (h *History) GetVersion(printHistory bool) (*PackageVersion, error) {
 			return nil, fmt.Errorf("failed to read commit from git: %w", err)
 		}
 
-		if commit.CommitID == currentVersion.CommitID {
-			DebugLogger.Printf("Current commit found: %s. Exiting reading loop\n", commit.CommitID)
-			currentCommitFound = true
-			break
-		}
+		for _, commit := range commits {
+			if commit.CommitID == currentVersion.CommitID {
+				DebugLogger.Printf("Current commit found: %s. Exiting reading loop\n", commit.CommitID)
+				currentCommitFound = true
+				break OuterLoop
+			}
 
-		commits = append(commits, commit)
-		if commit.IsCheckpointCommit() && !printHistory {
-			// If we find a checkpoint commit, we stop reading commits
-			DebugLogger.Printf("Checkpoint commit found: %s. Exiting reading loop\n", commit.CommitID)
-			break
+			commitsHistory = append(commitsHistory, commit)
+			if commit.IsCheckpointCommit() && !printHistory {
+				// If we find a checkpoint commit, we stop reading commits
+				DebugLogger.Printf("Checkpoint commit found: %s. Exiting reading loop\n", commit.CommitID)
+				break OuterLoop
+			}
 		}
 		i = i + commitReadBatchSize
 	}
 
-	if len(commits) == 0 {
+	if len(commitsHistory) == 0 {
 		// No new commits, return the current version
 		DebugLogger.Printf("No new commits found\n")
 		return currentVersion, nil
 	}
 
 	// Reverse the commits, so that the first commit is the oldest one
-	reverseCommits(commits)
+	reverseCommits(commitsHistory)
 
 	if !currentCommitFound {
 		currentVersion = &PackageVersion{}
 	}
 
-	finalVersion, err := h.applyCommits(currentVersion, printHistory, commits...)
+	finalVersion, err := h.applyCommits(currentVersion, printHistory, commitsHistory...)
 	if err != nil {
 		return nil, err
 	}
@@ -116,9 +120,9 @@ func (h *History) applyCommits(versionIn *PackageVersion, printHistory bool, com
 	return version, nil
 }
 
-func (h *History) readCommitFromGit(cursor int) (*Commit, error) {
+func (h *History) readCommitsFromGit(cursor int) ([]*Commit, error) {
 	cmd := exec.Command("git", "log", "--format=%H %s", fmt.Sprintf("--max-count=%d", commitReadBatchSize), fmt.Sprintf("--skip=%d", cursor))
-	cmd.Dir = filepath.Dir(h.path)
+	DebugLogger.Printf("Reading commits from git: %s\n", cmd.String())
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read commit from git: %w", err)
@@ -129,15 +133,21 @@ func (h *History) readCommitFromGit(cursor int) (*Commit, error) {
 		return nil, ErrNoCommitsLeft
 	}
 
-	commitStr := string(output)
-	commit, err := NewCommit(commitStr)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create commit from string: %w", err)
+	commitStrs := strings.Split(strings.TrimSpace(string(output)), "\n")
+	var commits []*Commit
+
+	for _, commitStr := range commitStrs {
+		commit, err := NewCommit(commitStr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create commit from string: %w", err)
+		}
+		commits = append(commits, commit)
 	}
-	return commit, nil
+	return commits, nil
 }
 
 func (h *History) Reset() error {
+	DebugLogger.Printf("Resetting history\n")
 	return os.Remove(h.path)
 }
 
